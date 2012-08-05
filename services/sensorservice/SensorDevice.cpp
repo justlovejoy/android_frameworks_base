@@ -102,7 +102,7 @@ ANDROID_SINGLETON_STATIC_INSTANCE(BatteryService)
 // ---------------------------------------------------------------------------
 
 ANDROID_SINGLETON_STATIC_INSTANCE(SensorDevice)
-    
+
 #ifdef USE_LGE_ALS_DUMMY
 static ssize_t addDummyLGESensor(sensor_t const **list, ssize_t count) {
     struct sensor_t dummy_light =     {
@@ -158,15 +158,15 @@ SensorDevice::SensorDevice()
 #endif
 #else
         err = sensors_open(&mSensorModule->common, &mSensorDevice);
-
         LOGE_IF(err, "couldn't open device for module %s (%s)",
                 SENSORS_HARDWARE_MODULE_ID, strerror(-err));
 #endif
 
+
         if (mSensorDevice || mOldSensorsCompatMode) {
             sensor_t const* list;
             ssize_t count = mSensorModule->get_sensors_list(mSensorModule, &list);
-            
+
 #ifdef USE_LGE_ALS_DUMMY
             count = addDummyLGESensor(&list, count);
 #endif
@@ -177,7 +177,7 @@ SensorDevice::SensorDevice()
                 mSensorDataDevice->data_open(mSensorDataDevice,
                             mSensorControlDevice->open_data_source(mSensorControlDevice));
             }
-            
+
             mActivationCount.setCapacity(count);
             Info model;
             for (size_t i=0 ; i<size_t(count) ; i++) {
@@ -222,7 +222,7 @@ void SensorDevice::dump(String8& result, char* buffer, size_t SIZE)
 ssize_t SensorDevice::getSensorList(sensor_t const** list) {
     if (!mSensorModule) return NO_INIT;
     ssize_t count = mSensorModule->get_sensors_list(mSensorModule, list);
-    
+
 #ifdef USE_LGE_ALS_DUMMY
     return addDummyLGESensor(list, count);
 #endif
@@ -253,8 +253,7 @@ ssize_t SensorDevice::poll(sensors_event_t* buffer, size_t count) {
                 continue;
             } else {
                 /* the old data_poll is supposed to return a handle,
-                                      256	
-                                      +                 * which has to be mapped to the type. */
+                 * which has to be mapped to the type. */
                 for (size_t i=0 ; i<size_t(mOldSensorsCount) && sensorType < 0 ; i++) {
                     if (mOldSensorsList[i].handle == result) {
                         sensorType = mOldSensorsList[i].type;
@@ -293,7 +292,7 @@ ssize_t SensorDevice::poll(sensors_event_t* buffer, size_t count) {
                 }
 #elif defined(PROXIMITY_LIES)
                 if (buffer[pollsDone].distance >= PROXIMITY_LIES)
-      buffer[pollsDone].distance = maxRange;
+			buffer[pollsDone].distance = maxRange;
 #endif
                 return pollsDone+1;
             } else if (sensorType == SENSOR_TYPE_LIGHT) {

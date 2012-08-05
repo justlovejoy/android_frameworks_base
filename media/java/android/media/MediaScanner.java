@@ -484,6 +484,7 @@ public class MediaScanner
                 }
                 return null;
             }
+
             // add some slack to avoid a rounding error
             long delta = (entry != null) ? (lastModified - entry.mLastModified) : 0;
             boolean wasModified = delta > 1 || delta < -1;

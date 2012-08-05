@@ -588,7 +588,7 @@ EGLClientBuffer egl_window_surface_v2_t::getRenderBuffer() const
     return buffer;
 }
 #endif
-    
+
 EGLBoolean egl_window_surface_v2_t::bindDrawSurface(ogles_context_t* gl)
 {
     GGLSurface buffer;
@@ -872,7 +872,7 @@ static const extention_map_t gExtentionMap[] = {
     { "eglDestroyImageKHR", 
             (__eglMustCastToProperFunctionPointerType)&eglDestroyImageKHR }, 
     { "eglSetSwapRectangleANDROID", 
-            (__eglMustCastToProperFunctionPointerType)&eglSetSwapRectangleANDROID },
+            (__eglMustCastToProperFunctionPointerType)&eglSetSwapRectangleANDROID }, 
 #ifdef QCOM_HARDWARE
     { "eglGetRenderBufferANDROID",
             (__eglMustCastToProperFunctionPointerType)&eglGetRenderBufferANDROID },

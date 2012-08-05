@@ -179,7 +179,7 @@ static void android_view_GLES20Canvas_prepare(JNIEnv* env, jobject clazz,
         OpenGLRenderer* renderer, jboolean opaque) {
     renderer->prepare(opaque);
 }
-    
+
 #ifdef QCOM_HARDWARE
 static void android_view_GLES20Canvas_startTileRendering(JNIEnv* env, jobject clazz,
         OpenGLRenderer* renderer, jint left, jint top, jint right, jint bottom) {

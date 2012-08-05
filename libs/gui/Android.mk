@@ -28,14 +28,11 @@ LOCAL_SHARED_LIBRARIES := \
 	libui \
 	libEGL \
 	libGLESv2
-    
+
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-ifneq ($(BOARD_USES_LEGACY_QCOM),true)
 LOCAL_SHARED_LIBRARIES += \
         libQcomUI
 LOCAL_C_INCLUDES := hardware/qcom/display/libqcomui
-LOCAL_CFLAGS += -DQCOM_HARDWARE
-endif
 ifeq ($(TARGET_QCOM_HDMI_OUT),true)
 LOCAL_CFLAGS += -DQCOM_HDMI_OUT
 endif
@@ -47,6 +44,10 @@ ifeq ($(TARGET_BOARD_PLATFORM), tegra)
 ifneq ($(BOARD_NO_ALLOW_DEQUEUE_CURRENT_BUFFER), true)
 	LOCAL_CFLAGS += -DALLOW_DEQUEUE_CURRENT_BUFFER
 endif
+endif
+
+ifeq ($(BOARD_ADRENO_DECIDE_TEXTURE_TARGET),true)
+    LOCAL_CFLAGS += -DDECIDE_TEXTURE_TARGET
 endif
 
 include $(BUILD_SHARED_LIBRARY)

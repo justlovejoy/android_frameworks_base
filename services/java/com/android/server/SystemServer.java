@@ -126,6 +126,7 @@ class ServerThread extends Thread {
 
         LightsService lights = null;
         PowerManagerService power = null;
+        DynamicMemoryManagerService dmm = null;
         BatteryService battery = null;
         AlarmManagerService alarm = null;
         NetworkManagementService networkManagement = null;
@@ -145,6 +146,7 @@ class ServerThread extends Thread {
         RecognitionManagerService recognition = null;
         ThrottleService throttle = null;
         NetworkTimeUpdateService networkTimeUpdater = null;
+        CpuGovernorService cpuGovernorManager = null;
 
         // Critical services...
         try {
@@ -197,9 +199,11 @@ class ServerThread extends Thread {
                 Slog.e(TAG, "Failure starting Account Manager", e);
             }
 
+
             Slog.i(TAG, "Content Manager");
             ContentService.main(context,
                     factoryTest == SystemServer.FACTORY_TEST_LOW_LEVEL);
+
 
             Slog.i(TAG, "System Content Providers");
             ActivityManagerService.installSystemProviders();
@@ -258,6 +262,16 @@ class ServerThread extends Thread {
                 if (airplaneModeOn == 0 && bluetoothOn != 0) {
                     bluetooth.enable();
                 }
+            }
+
+            if (SystemProperties.QCOM_HARDWARE) {
+                Slog.i(TAG, "DynamicMemoryManager Service");
+                dmm = new DynamicMemoryManagerService(context);
+            }
+
+            cpuGovernorManager = new CpuGovernorService(context);
+            if (cpuGovernorManager == null) {
+                Slog.e(TAG, "CpuGovernorService failed to start");
             }
 
         } catch (RuntimeException e) {
@@ -439,8 +453,8 @@ class ServerThread extends Thread {
             } catch (Throwable e) {
                 reportWtf("starting Notification Manager", e);
             }
-            
-            //QCOM HDMI OUT
+
+	    //QCOM HDMI OUT
             if (SystemProperties.QCOM_HDMI_OUT ) {
                 try {
                     Slog.i(TAG, "HDMI Service");

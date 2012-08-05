@@ -81,11 +81,11 @@ public abstract class HardwareRenderer {
      * "false", to disable tile rendering
      */
     static final String TILE_RENDERING_PROPERTY = "debug.enabletr";
-    
+
     /**
      * System property used to enable or disable vsync.
      * The default value of this property is assumed to be false.
-     * 
+     *
      * Possible values:
      * "true", to disable vsync
      * "false", to enable vsync
@@ -698,7 +698,6 @@ public abstract class HardwareRenderer {
         }
 
         private void enableDirtyRegions() {
-            // If mDirtyRegions is set, this m
             // If mDirtyRegions is set, this means we have an EGL configuration
             // with EGL_SWAP_BEHAVIOR_PRESERVED_BIT set
             if (sDirtyRegions) {
@@ -767,9 +766,9 @@ public abstract class HardwareRenderer {
                 if (!createSurface(holder)) {
                     return;
                 }
-                
+
                 mUpdateDirtyRegions = true;
-                
+
                 if (mCanvas != null) {
                     setEnabled(true);
                 }
@@ -822,14 +821,14 @@ public abstract class HardwareRenderer {
 
         boolean canDraw() {
             return mGl != null && mCanvas != null;
-        }
+        }        
         
         void startTileRendering(Rect dirty) {
         }
 
         void endTileRendering() {
         }
-        
+
         void onPreDraw(Rect dirty) {
         }
 
@@ -857,10 +856,10 @@ public abstract class HardwareRenderer {
                         dirty = null;
                     }
 
-                    onPreDraw(dirty);
-                    
                     if (sTileRendering)
                         startTileRendering(dirty);
+
+                    onPreDraw(dirty);
 
                     HardwareCanvas canvas = mCanvas;
                     attachInfo.mHardwareCanvas = canvas;
@@ -1054,7 +1053,7 @@ public abstract class HardwareRenderer {
         void onPostDraw() {
             mGlCanvas.onPostDraw();
         }
-        
+
         @Override
         void startTileRendering(Rect dirty) {
             mGlCanvas.startTileRendering(dirty);

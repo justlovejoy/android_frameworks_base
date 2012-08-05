@@ -157,6 +157,10 @@ LOCAL_SRC_FILES:= \
 	android_content_res_Configuration.cpp \
     android_animation_PropertyValuesHolder.cpp
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+	LOCAL_SRC_FILES += org_codeaurora_Performance.cpp
+endif
+
 LOCAL_C_INCLUDES += \
 	$(JNI_H_INCLUDE) \
 	$(LOCAL_PATH)/android/graphics \
@@ -227,7 +231,6 @@ ifeq ($(USE_OPENGL_RENDERER),true)
 LOCAL_SHARED_LIBRARIES += libtilerenderer
 endif
 LOCAL_C_INCLUDES += hardware/qcom/display/libtilerenderer
-LOCAL_CFLAGS += -DQCOM_HARDWARE
 endif
 
 ifeq ($(BOARD_HAVE_BLUETOOTH),true)
@@ -251,6 +254,10 @@ ifeq ($(WITH_MALLOC_LEAK_CHECK),true)
 endif
 
 LOCAL_MODULE:= libandroid_runtime
+
+ifneq ($(BOARD_MOBILEDATA_INTERFACE_NAME),)
+	LOCAL_CFLAGS += -DMOBILE_IFACE_NAME='$(BOARD_MOBILEDATA_INTERFACE_NAME)'
+endif
 
 include $(BUILD_SHARED_LIBRARY)
 

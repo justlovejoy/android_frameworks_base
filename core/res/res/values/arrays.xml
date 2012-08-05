@@ -468,42 +468,42 @@
         <item>@drawable/ic_lockscreen_soundon</item>
         <item>@null</item>
     </array>
-    
+
     <array name="lockscreen_target_descriptions_when_silent">
         <item>@string/description_target_unlock</item>
         <item>@null</item>
         <item>@string/description_target_soundon</item>
         <item>@null</item>
     </array>
-    
+
     <array name="lockscreen_direction_descriptions">
         <item>@string/description_direction_right</item>
         <item>@null</item>
         <item>@string/description_direction_left</item>
         <item>@null</item>
     </array>
-    
+
     <array name="lockscreen_targets_when_soundon">
         <item>@drawable/ic_lockscreen_unlock</item>
         <item>@null</item>
         <item>@drawable/ic_lockscreen_silent</item>
         <item>@null</item>
     </array>
-    
+
     <array name="lockscreen_target_descriptions_when_soundon">
         <item>@string/description_target_unlock</item>
         <item>@null</item>
         <item>@string/description_target_silent</item>
         <item>@null</item>
     </array>
-    
+
     <array name="lockscreen_targets_with_camera">
         <item>@drawable/ic_lockscreen_unlock</item>
         <item>@null</item>
         <item>@drawable/ic_lockscreen_camera</item>
         <item>@null</item>
     </array>
-    
+
     <array name="lockscreen_target_descriptions_with_camera">
         <item>@string/description_target_unlock</item>
         <item>@null</item>
@@ -1236,18 +1236,24 @@
     <!-- Defines the shutdown options shown in the reboot dialog. -->
     <array name="shutdown_reboot_options" translatable="false">
         <item>@string/reboot_reboot</item>
-        <item>@string/reboot_restart</item>
         <item>@string/reboot_recovery</item>
-        <item>@string/reboot_bootloader</item>
+        <item>@string/reboot_download</item>
     </array>
 
     <!-- Do not translate. Defines the shutdown actions passed to the kernel.
          The first item should be empty for regular reboot. -->
     <string-array name="shutdown_reboot_actions" translatable="false">
         <item></item>
-        <item>restart</item>
         <item>recovery</item>
-        <item>bootloader</item>
+        <item>download</item>
+    </string-array>
+
+    <!-- Do not translate. Defines the mapping of notification package names
+         from the actual triggering package to the user selectable package.
+         E.g. GTalk notifications come via Google Services Framework
+         Format: [triggering package]|[user package] -->
+    <string-array name="notification_light_package_mapping" translatable="false">
+        <item>com.google.android.gsf|com.google.android.talk</item>
     </string-array>
 
 </resources>

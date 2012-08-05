@@ -105,14 +105,15 @@ SurfaceFlinger::SurfaceFlinger()
         mDebugInTransaction(0),
         mLastTransactionTime(0),
         mBootFinished(false),
-        mConsoleSignals(0),
+#ifdef QCOM_HDMI_OUT
+        mExtDispOutput(EXT_TYPE_NONE),
+#endif
 #ifdef QCOM_HARDWARE
         mCanSkipComposition(false),
 #endif
-#ifdef QCOM_HDMI_OUT
-        mHDMIOutput(false),
-#endif
-        mSecureFrameBuffer(0)
+        mConsoleSignals(0),
+        mSecureFrameBuffer(0),
+        mUseDithering(false)
 {
     init();
 }
@@ -132,6 +133,10 @@ void SurfaceFlinger::init()
 
     property_get("debug.sf.ddms", value, "0");
     mDebugDDMS = atoi(value);
+
+    property_get("persist.sys.use_dithering", value, "0");
+    mUseDithering = atoi(value) == 1;
+
     if (mDebugDDMS) {
         DdmConnection::start(getServiceName());
     }
@@ -139,6 +144,7 @@ void SurfaceFlinger::init()
     LOGI_IF(mDebugRegion,       "showupdates enabled");
     LOGI_IF(mDebugBackground,   "showbackground enabled");
     LOGI_IF(mDebugDDMS,         "DDMS debugging enabled");
+    LOGI_IF(mUseDithering,      "use dithering");
 }
 
 SurfaceFlinger::~SurfaceFlinger()
@@ -422,10 +428,11 @@ bool SurfaceFlinger::threadLoop()
     //Necessary for race-free overlay channel management.
     //Must always be held only after handleConsoleEvents() since
     //that could enable / disable HDMI based on suspend resume
-    Mutex::Autolock _l(mHDMILock);
+    Mutex::Autolock _l(mExtDispLock);
 #else
     // if we're in a global transaction, don't do anything.
 #endif
+
     const uint32_t mask = eTransactionNeeded | eTraversalNeeded;
     uint32_t transactionFlags = peekTransactionFlags(mask);
     if (UNLIKELY(transactionFlags)) {
@@ -518,18 +525,15 @@ void SurfaceFlinger::handleConsoleEvents()
     if (what & eConsoleAcquired) {
         hw.acquireScreen();
 #ifdef QCOM_HDMI_OUT
-        updateHwcHDMI(mHDMIOutput);
+        updateHwcExternalDisplay(mExtDispOutput);
 #endif
-        // this is a temporary work-around, eventually this should be called
-        // by the power-manager
-        SurfaceFlinger::turnElectronBeamOn(mElectronBeamAnimationMode);
     }
 
     if (what & eConsoleReleased) {
         if (hw.isScreenAcquired()) {
             hw.releaseScreen();
 #ifdef QCOM_HDMI_OUT
-            updateHwcHDMI(false);
+            updateHwcExternalDisplay(false);
 #endif
         }
     }
@@ -1023,6 +1027,9 @@ void SurfaceFlinger::setupHardwareComposer(Region& dirtyInOut)
                     dirtyInOut.orSelf(layer->visibleRegionScreen);
                 }
                 layer->setOverlay(isOverlay);
+#ifdef QCOM_HARDWARE
+                layer->mQCLayer->setS3DComposeFormat(cur[i].hints);
+#endif
             }
             // don't erase stuff outside the dirty region
             transparent.andSelf(dirtyInOut);
@@ -1386,30 +1393,31 @@ int SurfaceFlinger::setOrientation(DisplayID dpy,
 }
 
 #ifdef QCOM_HDMI_OUT
-void SurfaceFlinger::updateHwcHDMI(bool enable)
+void SurfaceFlinger::updateHwcExternalDisplay(int externaltype)
 {
     invalidateHwcGeometry();
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
+    mDirtyRegion.set(hw.bounds());
     HWComposer& hwc(hw.getHwComposer());
-    hwc.enableHDMIOutput(enable);
+    hwc.perform(EVENT_EXTERNAL_DISPLAY, externaltype);
 }
 
-void SurfaceFlinger::enableHDMIOutput(int enable)
+/*
+ * Handles the externalDisplay event
+ * @param: disp_type - external display type(HDMI/WFD)
+ * @param: value     - value(on/off)
+ * */
+void SurfaceFlinger::enableExternalDisplay(int disp_type, int value)
 {
-    Mutex::Autolock _l(mHDMILock);
-    mHDMIOutput = enable;
-    updateHwcHDMI(enable);
-    signalEvent();
-}
-
-void SurfaceFlinger::setActionSafeWidthRatio(float asWidthRatio){
-    const DisplayHardware& hw(graphicPlane(0).displayHardware());
-    hw.setActionSafeWidthRatio(asWidthRatio);
-}
-
-void SurfaceFlinger::setActionSafeHeightRatio(float asHeightRatio){
-    const DisplayHardware& hw(graphicPlane(0).displayHardware());
-    hw.setActionSafeHeightRatio(asHeightRatio);
+    Mutex::Autolock _l(mExtDispLock);
+    external_display_type newType = handleEventHDMI(
+                                      (external_display_type) disp_type, value,
+                                      (external_display_type) mExtDispOutput);
+    if(newType != mExtDispOutput) {
+        mExtDispOutput = (int) newType;
+        updateHwcExternalDisplay(mExtDispOutput);
+        signalEvent();
+    }
 }
 #endif
 
@@ -2156,7 +2164,7 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
     const uint32_t hw_w = hw.getWidth();
     const uint32_t hw_h = hw.getHeight();
-    const Region screenBounds(hw.bounds());
+    const Region screenBounds(hw.getBounds());
 
     GLfloat u, v;
     GLuint tname;
@@ -2166,9 +2174,9 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
     }
 
     GLfloat vtx[8];
-    const GLfloat texCoords[4][2] = { {0,v}, {0,0}, {u,0}, {u,v} };
+    const GLfloat texCoords[4][2] = { {0,0}, {0,v}, {u,v}, {u,0} };
     glBindTexture(GL_TEXTURE_2D, tname);
-    glTexEnvx(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexEnvx(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
@@ -2225,7 +2233,7 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
     };
 
     // the full animation is 12 frames
-    int nbFrames = 8;
+    int nbFrames = 12;
     s_curve_interpolator itr(nbFrames, 7.5f);
     s_curve_interpolator itg(nbFrames, 8.0f);
     s_curve_interpolator itb(nbFrames, 8.5f);
@@ -2243,8 +2251,13 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
         hw.flip(screenBounds);
     }
 
-    nbFrames = 4;
     v_stretch vverts(hw_w, hw_h);
+
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
     for (int i=nbFrames-1 ; i>=0 ; i--) {
@@ -2271,6 +2284,12 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
         // draw the blue plane
         vverts(vtx, vb);
         glColorMask(0,0,1,1);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        // draw the white highlight (we use the last vertices)
+        glDisable(GL_TEXTURE_2D);
+        glColorMask(1,1,1,1);
+        glColor4f(vg, vg, vg, 1);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         hw.flip(screenBounds);
@@ -2456,7 +2475,12 @@ status_t SurfaceFlinger::captureScreenImplLocked(DisplayID dpy,
         glClear(GL_COLOR_BUFFER_BIT);
 
         const LayerVector& layers(mDrawingState.layersSortedByZ);
+#ifdef QCOM_HARDWARE
+        //if we have secure windows, do not draw any layers.
+        const size_t count = mSecureFrameBuffer ? 0: layers.size();
+#else
         const size_t count = layers.size();
+#endif
         for (size_t i=0 ; i<count ; ++i) {
             const sp<LayerBase>& layer(layers[i]);
             const uint32_t flags = layer->drawingState().flags;
@@ -2560,9 +2584,11 @@ status_t SurfaceFlinger::captureScreen(DisplayID dpy,
         virtual bool handler() {
             Mutex::Autolock _l(flinger->mStateLock);
 
+#ifndef QCOM_HARDWARE
             // if we have secure windows, never allow the screen capture
             if (flinger->mSecureFrameBuffer)
                 return true;
+#endif
 
             result = flinger->captureScreenImplLocked(dpy,
                     heap, w, h, f, sw, sh, minLayerZ, maxLayerZ);
@@ -2719,6 +2745,7 @@ status_t Client::destroySurface(SurfaceID sid) {
 #ifdef QCOM_HARDWARE
 GraphicBufferAlloc::GraphicBufferAlloc() {
     mFreedIndex = -1;
+    mSize = 0;
 }
 #else
 GraphicBufferAlloc::GraphicBufferAlloc() {}
@@ -2741,6 +2768,11 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
         return 0;
     }
 #ifdef QCOM_HARDWARE
+    err = checkBuffer((native_handle_t *)graphicBuffer->handle, mSize, usage);
+    if (err) {
+        LOGE("%s: checkBuffer failed",__FUNCTION__);
+        return 0;
+    }
     Mutex::Autolock _l(mLock);
     if (-1 != mFreedIndex) {
         mBuffers.insertAt(graphicBuffer, mFreedIndex);
@@ -2755,7 +2787,7 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
 #ifdef QCOM_HARDWARE
 void GraphicBufferAlloc::freeAllGraphicBuffersExcept(int bufIdx) {
     Mutex::Autolock _l(mLock);
-    if (0 <= bufIdx && bufIdx < mBuffers.size()) {
+    if (bufIdx >= 0 && bufIdx < (int)mBuffers.size()) {
         sp<GraphicBuffer> b(mBuffers[bufIdx]);
         mBuffers.clear();
         mBuffers.add(b);
@@ -2767,12 +2799,16 @@ void GraphicBufferAlloc::freeAllGraphicBuffersExcept(int bufIdx) {
 
 void GraphicBufferAlloc::freeGraphicBufferAtIndex(int bufIdx) {
      Mutex::Autolock _l(mLock);
-     if (0 <= bufIdx && bufIdx < mBuffers.size()) {
+     if (bufIdx >= 0 && bufIdx < (int)mBuffers.size()) {
         mBuffers.removeItemsAt(bufIdx);
         mFreedIndex = bufIdx;
      } else {
         mFreedIndex = -1;
      }
+}
+
+void GraphicBufferAlloc::setGraphicBufferSize(int size) {
+    mSize = size;
 }
 #endif
 // ---------------------------------------------------------------------------

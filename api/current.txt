@@ -1485,6 +1485,7 @@ package android {
     field public static final int emptyPhoneNumber = 17039366; // 0x1040006
     field public static final int httpErrorBadUrl = 17039367; // 0x1040007
     field public static final int httpErrorUnsupportedScheme = 17039368; // 0x1040008
+    field public static final int lockscreen_emergency_call = 17040095; // 0x10402df
     field public static final int no = 17039369; // 0x1040009
     field public static final int ok = 17039370; // 0x104000a
     field public static final int paste = 17039371; // 0x104000b
@@ -10851,9 +10852,13 @@ package android.media {
 
   public final class MediaRecorder.AudioEncoder {
     field public static final int AAC = 3; // 0x3
+    field public static final int AAC_PLUS = 4; // 0x4
     field public static final int AMR_NB = 1; // 0x1
     field public static final int AMR_WB = 2; // 0x2
     field public static final int DEFAULT = 0; // 0x0
+    field public static final int EAAC_PLUS = 5; // 0x5
+    field public static final int EVRC = 6; // 0x6
+    field public static final int QCELP = 7; // 0x7
   }
 
   public final class MediaRecorder.AudioSource {
@@ -10880,8 +10885,10 @@ package android.media {
     field public static final int AMR_WB = 4; // 0x4
     field public static final int DEFAULT = 0; // 0x0
     field public static final int MPEG_4 = 2; // 0x2
+    field public static final int QCP = 9; // 0x9
     field public static final int RAW_AMR = 3; // 0x3
     field public static final int THREE_GPP = 1; // 0x1
+    field public static final int THREE_GPP2 = 10; // 0xa
   }
 
   public final class MediaRecorder.VideoEncoder {
@@ -16357,6 +16364,7 @@ package android.provider {
   }
 
   protected static abstract interface ContactsContract.BaseSyncColumns {
+    field public static final java.lang.String IS_RESTRICTED = "is_restricted";
     field public static final java.lang.String SYNC1 = "sync1";
     field public static final java.lang.String SYNC2 = "sync2";
     field public static final java.lang.String SYNC3 = "sync3";
@@ -17443,6 +17451,7 @@ package android.provider {
     field public static final java.lang.String ACCESSIBILITY_ENABLED = "accessibility_enabled";
     field public static final java.lang.String ACCESSIBILITY_SPEAK_PASSWORD = "speak_password";
     field public static final java.lang.String ADB_ENABLED = "adb_enabled";
+    field public static final java.lang.String ADB_NOTIFY = "adb_notify";
     field public static final java.lang.String ALLOWED_GEOLOCATION_ORIGINS = "allowed_geolocation_origins";
     field public static final java.lang.String ALLOW_MOCK_LOCATION = "mock_location";
     field public static final java.lang.String ANDROID_ID = "android_id";
@@ -17536,6 +17545,7 @@ package android.provider {
     field public static final java.lang.String BLUETOOTH_DISCOVERABILITY_TIMEOUT = "bluetooth_discoverability_timeout";
     field public static final deprecated java.lang.String BLUETOOTH_ON = "bluetooth_on";
     field public static final android.net.Uri CONTENT_URI;
+    field public static final java.lang.String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
     field public static final deprecated java.lang.String DATA_ROAMING = "data_roaming";
     field public static final java.lang.String DATE_FORMAT = "date_format";
     field public static final java.lang.String DEBUG_APP = "debug_app";
@@ -17555,9 +17565,11 @@ package android.provider {
     field public static final deprecated java.lang.String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
     field public static final deprecated java.lang.String LOCK_PATTERN_VISIBLE = "lock_pattern_visible_pattern";
     field public static final deprecated java.lang.String LOGGING_ID = "logging_id";
+    field public static final java.lang.String MENU_LOCATION = "menu_location";
     field public static final java.lang.String MODE_RINGER = "mode_ringer";
     field public static final java.lang.String MODE_RINGER_STREAMS_AFFECTED = "mode_ringer_streams_affected";
     field public static final java.lang.String MUTE_STREAMS_AFFECTED = "mute_streams_affected";
+    field public static final java.lang.String MVNO_ROAMING = "mvno_roaming";
     field public static final deprecated java.lang.String NETWORK_PREFERENCE = "network_preference";
     field public static final java.lang.String NEXT_ALARM_FORMATTED = "next_alarm_formatted";
     field public static final java.lang.String NOTIFICATION_SOUND = "notification_sound";
@@ -20435,6 +20447,7 @@ package android.text {
     method public static java.lang.CharSequence getReverse(java.lang.CharSequence, int, int);
     method public static int getTrimmedLength(java.lang.CharSequence);
     method public static java.lang.String htmlEncode(java.lang.String);
+    method public static java.lang.String htmlEncodeForEmail(java.lang.String);
     method public static int indexOf(java.lang.CharSequence, char);
     method public static int indexOf(java.lang.CharSequence, char, int);
     method public static int indexOf(java.lang.CharSequence, char, int, int);
@@ -22204,8 +22217,12 @@ package android.view {
     field public static final int KEYCODE_B = 30; // 0x1e
     field public static final int KEYCODE_BACK = 4; // 0x4
     field public static final int KEYCODE_BACKSLASH = 73; // 0x49
+    field public static final int KEYCODE_BLUETOOTH = 221; // 0xdd
     field public static final int KEYCODE_BOOKMARK = 174; // 0xae
     field public static final int KEYCODE_BREAK = 121; // 0x79
+    field public static final int KEYCODE_BRIGHTNESS_AUTO = 225; // 0xe1
+    field public static final int KEYCODE_BRIGHTNESS_DOWN = 224; // 0xe0
+    field public static final int KEYCODE_BRIGHTNESS_UP = 223; // 0xdf
     field public static final int KEYCODE_BUTTON_1 = 188; // 0xbc
     field public static final int KEYCODE_BUTTON_10 = 197; // 0xc5
     field public static final int KEYCODE_BUTTON_11 = 198; // 0xc6
@@ -22244,6 +22261,7 @@ package android.view {
     field public static final int KEYCODE_CAMERA = 27; // 0x1b
     field public static final int KEYCODE_CAPS_LOCK = 115; // 0x73
     field public static final int KEYCODE_CAPTIONS = 175; // 0xaf
+    field public static final int KEYCODE_CAPTURE = 226; // 0xe2
     field public static final int KEYCODE_CHANNEL_DOWN = 167; // 0xa7
     field public static final int KEYCODE_CHANNEL_UP = 166; // 0xa6
     field public static final int KEYCODE_CLEAR = 28; // 0x1c
@@ -22260,11 +22278,14 @@ package android.view {
     field public static final int KEYCODE_DPAD_UP = 19; // 0x13
     field public static final int KEYCODE_DVR = 173; // 0xad
     field public static final int KEYCODE_E = 33; // 0x21
+    field public static final int KEYCODE_EISU = 212; // 0xd4
     field public static final int KEYCODE_ENDCALL = 6; // 0x6
     field public static final int KEYCODE_ENTER = 66; // 0x42
     field public static final int KEYCODE_ENVELOPE = 65; // 0x41
     field public static final int KEYCODE_EQUALS = 70; // 0x46
     field public static final int KEYCODE_ESCAPE = 111; // 0x6f
+    field public static final int KEYCODE_EUROPE_1 = 217; // 0xd9
+    field public static final int KEYCODE_EUROPE_2 = 218; // 0xda
     field public static final int KEYCODE_EXPLORER = 64; // 0x40
     field public static final int KEYCODE_F = 34; // 0x22
     field public static final int KEYCODE_F1 = 131; // 0x83
@@ -22287,7 +22308,10 @@ package android.view {
     field public static final int KEYCODE_GRAVE = 68; // 0x44
     field public static final int KEYCODE_GUIDE = 172; // 0xac
     field public static final int KEYCODE_H = 36; // 0x24
+    field public static final int KEYCODE_HANKAKU_ZENKAKU = 211; // 0xd3
     field public static final int KEYCODE_HEADSETHOOK = 79; // 0x4f
+    field public static final int KEYCODE_HENKAN = 214; // 0xd6
+    field public static final int KEYCODE_HIRAGANA_KATAKANA = 215; // 0xd7
     field public static final int KEYCODE_HOME = 3; // 0x3
     field public static final int KEYCODE_I = 37; // 0x25
     field public static final int KEYCODE_INFO = 165; // 0xa5

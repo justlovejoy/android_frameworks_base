@@ -204,6 +204,7 @@
     <string name="roamingText11">Roaming Banner On</string>
     <string name="roamingText12">Roaming Banner Off</string>
     <string name="roamingTextSearching">Searching for Service</string>
+    <string name="roamingTextAirplaneMode">Airplane Mode</string>
 
 
     <!--
@@ -1692,6 +1693,10 @@
         <item>ICQ</item>
         <item>Jabber</item>
     </string-array>
+
+    <!-- Hardware Rotation lock string -->
+    <string name="toast_rotation_unlocked">Display Rotation Unlocked</string>
+    <string name="toast_rotation_locked">Display Rotation Locked</string>
 
     <!-- Custom phone number type -->
     <string name="phoneTypeCustom">Custom</string>
