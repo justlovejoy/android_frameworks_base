@@ -716,7 +716,7 @@ public final class WebViewCore {
                                 }
                                     // 10 is an adjustable number.
                                 Process.setThreadPriority(
-                                        Process.THREAD_PRIORITY_DEFAULT + 10 *
+                                        Process.THREAD_PRIORITY_DEFAULT + 3 *
                                         Process.THREAD_PRIORITY_LESS_FAVORABLE);
 
                                 sWebCoreHandler.sendMessageDelayed(Message.obtain(null,

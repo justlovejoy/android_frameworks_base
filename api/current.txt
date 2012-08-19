@@ -5536,6 +5536,7 @@ package android.content {
     field public static final java.lang.String CATEGORY_SELECTED_ALTERNATIVE = "android.intent.category.SELECTED_ALTERNATIVE";
     field public static final java.lang.String CATEGORY_TAB = "android.intent.category.TAB";
     field public static final java.lang.String CATEGORY_TEST = "android.intent.category.TEST";
+    field public static final java.lang.String CATEGORY_TF101_KB_DOCK = "android.intent.category.TF101_KB_DOCK";
     field public static final java.lang.String CATEGORY_UNIT_TEST = "android.intent.category.UNIT_TEST";
     field public static final android.os.Parcelable.Creator CREATOR;
     field public static final java.lang.String EXTRA_ALARM_COUNT = "android.intent.extra.ALARM_COUNT";
@@ -5553,6 +5554,7 @@ package android.content {
     field public static final int EXTRA_DOCK_STATE_DESK = 1; // 0x1
     field public static final int EXTRA_DOCK_STATE_HE_DESK = 4; // 0x4
     field public static final int EXTRA_DOCK_STATE_LE_DESK = 3; // 0x3
+    field public static final int EXTRA_DOCK_STATE_TF101_KB = 10; // 0xa
     field public static final int EXTRA_DOCK_STATE_UNDOCKED = 0; // 0x0
     field public static final java.lang.String EXTRA_DONT_KILL_APP = "android.intent.extra.DONT_KILL_APP";
     field public static final java.lang.String EXTRA_EMAIL = "android.intent.extra.EMAIL";
@@ -6268,6 +6270,8 @@ package android.content.pm {
     field public static final java.lang.String FEATURE_TELEPHONY = "android.hardware.telephony";
     field public static final java.lang.String FEATURE_TELEPHONY_CDMA = "android.hardware.telephony.cdma";
     field public static final java.lang.String FEATURE_TELEPHONY_GSM = "android.hardware.telephony.gsm";
+    field public static final java.lang.String FEATURE_TF101_HALL_SENSOR = "cna.hardware.hall_sensor";
+    field public static final java.lang.String FEATURE_TF101_KB_DOCK = "cna.hardware.dock";
     field public static final java.lang.String FEATURE_TOUCHSCREEN = "android.hardware.touchscreen";
     field public static final java.lang.String FEATURE_TOUCHSCREEN_MULTITOUCH = "android.hardware.touchscreen.multitouch";
     field public static final java.lang.String FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT = "android.hardware.touchscreen.multitouch.distinct";
@@ -10814,6 +10818,8 @@ package android.media {
     ctor public MediaRecorder();
     method public static final int getAudioSourceMax();
     method public int getMaxAmplitude() throws java.lang.IllegalStateException;
+    method public void native_start() throws java.lang.IllegalStateException;
+    method public void native_stop() throws java.lang.IllegalStateException;
     method public void prepare() throws java.io.IOException, java.lang.IllegalStateException;
     method public void release();
     method public void reset();
@@ -22340,6 +22346,7 @@ package android.view {
     field public static final int KEYCODE_MINUS = 69; // 0x45
     field public static final int KEYCODE_MOVE_END = 123; // 0x7b
     field public static final int KEYCODE_MOVE_HOME = 122; // 0x7a
+    field public static final int KEYCODE_MUHENKAN = 213; // 0xd5
     field public static final int KEYCODE_MUSIC = 209; // 0xd1
     field public static final int KEYCODE_MUTE = 91; // 0x5b
     field public static final int KEYCODE_N = 42; // 0x2a
@@ -22390,6 +22397,7 @@ package android.view {
     field public static final int KEYCODE_SHIFT_LEFT = 59; // 0x3b
     field public static final int KEYCODE_SHIFT_RIGHT = 60; // 0x3c
     field public static final int KEYCODE_SLASH = 76; // 0x4c
+    field public static final int KEYCODE_SLEEP = 219; // 0xdb
     field public static final int KEYCODE_SOFT_LEFT = 1; // 0x1
     field public static final int KEYCODE_SOFT_RIGHT = 2; // 0x2
     field public static final int KEYCODE_SPACE = 62; // 0x3e
@@ -22401,6 +22409,7 @@ package android.view {
     field public static final int KEYCODE_SYSRQ = 120; // 0x78
     field public static final int KEYCODE_T = 48; // 0x30
     field public static final int KEYCODE_TAB = 61; // 0x3d
+    field public static final int KEYCODE_TOUCHPAD = 222; // 0xde
     field public static final int KEYCODE_TV = 170; // 0xaa
     field public static final int KEYCODE_TV_INPUT = 178; // 0xb2
     field public static final int KEYCODE_TV_POWER = 177; // 0xb1
@@ -22412,8 +22421,10 @@ package android.view {
     field public static final int KEYCODE_VOLUME_UP = 24; // 0x18
     field public static final int KEYCODE_W = 51; // 0x33
     field public static final int KEYCODE_WINDOW = 171; // 0xab
+    field public static final int KEYCODE_WIRELESS = 220; // 0xdc
     field public static final int KEYCODE_X = 52; // 0x34
     field public static final int KEYCODE_Y = 53; // 0x35
+    field public static final int KEYCODE_YEN = 216; // 0xd8
     field public static final int KEYCODE_Z = 54; // 0x36
     field public static final int KEYCODE_ZOOM_IN = 168; // 0xa8
     field public static final int KEYCODE_ZOOM_OUT = 169; // 0xa9
